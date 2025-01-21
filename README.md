@@ -62,3 +62,19 @@ REMOTE_PORT=2022
 
 I added an ssh key in roots homedir and ssh-copy-id'd it to the user on my remote host.  Once this was setup I enable the systemd job
 sudo systemctl enable secure-tunnel@<host>.service
+
+## libvirt
+Install libvert
+
+Add the bridge you created above
+```
+sudo virsh net-define br0.xml 
+sudo virsh net-autostart br0
+sudo virsh net-start br0
+```
+
+Setup Home Assistant (on the bridge so it can see wireless things (see virt-install [here](https://www.home-assistant.io/installation/linux/) virt-install option for image, below is slightly modified)
+```
+apt install virtinst
+virt-install --name haos --description "Home Assistant" --os-variant=generic --ram 2048 --vcpus=2 --disk=/media/haos/haos_ova-14.1.qcow2,bus=scsi --controller type=scsi,model=virtio-scsi --import --graphics none --boot uefi  --network network=br0
+```
