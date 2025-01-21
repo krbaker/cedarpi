@@ -41,9 +41,8 @@ Description=Setup a secure tunnel to %I
 After=network.target
 
 [Service]
-Environment="LOCAL_ADDR=localhost"
 EnvironmentFile=/etc/default/secure-tunnel@%i
-ExecStart=/usr/bin/ssh -NT -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -R ${REMOTE_PORT}:127.0.0.1:${LOCAL_PORT} ${TARGET}
+ExecStart=/usr/bin/ssh -NT -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -R ${REMOTE_PORT}:{LOCAL_HOST}:${LOCAL_PORT} ${TARGET}
 
 RestartSec=5
 Restart=always
@@ -52,16 +51,21 @@ Restart=always
 WantedBy=mutli-user.target
 ```
 
+I had an issue with the multi-user.target, at some point it started running the graphical boot target?  🤷‍♂️
+
 ## Host config 
 /etc/default/secure-tunnel@<host>
 ```
 TARGET=<user>@<host>
 LOCAL_PORT=22
 REMOTE_PORT=2022
+LOCAL_HOST=127.0.0.1
 ```
 
 I added an ssh key in roots homedir and ssh-copy-id'd it to the user on my remote host.  Once this was setup I enable the systemd job
 sudo systemctl enable secure-tunnel@<host>.service
+
+I added another entry for home assistant (looked up the IP for local_host, set to 8123)
 
 ## libvirt
 Install libvert
